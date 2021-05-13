@@ -1,8 +1,6 @@
 import pygame
 import os
-import time 
 import random
-import time
 pygame.font.init()
 
 
@@ -161,12 +159,5 @@ def main():
 		
 		if keys[pygame.K_DOWN] and player2.y < HEIGHT - PLAYER.get_height():
 			player2.y += player2.vel 
-
-
-
-
-
-
-
 
 main()
