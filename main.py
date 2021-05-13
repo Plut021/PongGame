@@ -1,6 +1,8 @@
 import pygame
 import os
 import random
+
+
 pygame.font.init()
 
 
@@ -25,6 +27,7 @@ def main():
 	FPS = 60
 	main_font = pygame.font.SysFont("comicsans", 200)
 	wait_start = True
+	speed_count = 0
 
 	clock = pygame.time.Clock()
 	
@@ -58,11 +61,15 @@ def main():
 			self.x = x 
 			self.y = y 
 			self.x_vel = x_vel
-			self.y_vel = -10#random.randint(angle_range[0],angle_range[1])
+			self.y_vel = random.randint(angle_range[0],angle_range[1])
 			self.mask = pygame.mask.from_surface(self.img)
+			self.angle = abs(self.y_vel)/abs(self.x_vel)
+
+
 
 		def draw_ball(self, window=WIN):
 			window.blit(self.img, (self.x, self.y))
+
 
 	class Wall:
 		def __init__(self, img, x, y):
@@ -91,6 +98,7 @@ def main():
 
 			if player.mask.overlap(ball.mask, (offset_x, offset_y)) != None:
 				ball.x_vel = ball.x_vel * -1
+
 		
 	def wall_ball_check(walls = [wall1, wall2], ball=ball):
 		for wall in walls:
@@ -110,11 +118,13 @@ def main():
 			player2.score += 1
 			ball.x = WIDTH/2
 			ball.y = HEIGHT/2
+			ball.x_vel = 10
 
 		if ball.x > WIDTH -100:
 			player1.score += 1
 			ball.x = WIDTH/2
 			ball.y = HEIGHT/2
+			ball.x_vel = -10
 
 
 
@@ -135,13 +145,28 @@ def main():
 		player2.draw_player()
 		wall1.draw_wall()
 		wall2.draw_wall()
+
 		
 		pygame.display.update()
 
 	while run:
 		clock.tick(FPS)
 		redraw_window()
-		
+		speed_count += 1
+
+		if speed_count > 5*FPS and abs(ball.x_vel) < 30:
+			speed_count = 0
+			if ball.x_vel > 0:
+				ball.x_vel += 5
+
+			elif ball.x_vel < 0:
+				ball.x_vel -= 5
+
+			if ball.y_vel > 0:
+				ball.y_vel = int(ball.angle * abs(ball.x_vel))
+
+			elif ball.y_vel < 0:
+				ball.y_vel = int(-ball.angle * abs(ball.x_vel))
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -159,5 +184,6 @@ def main():
 		
 		if keys[pygame.K_DOWN] and player2.y < HEIGHT - PLAYER.get_height():
 			player2.y += player2.vel 
+
 
 main()
